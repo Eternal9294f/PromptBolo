@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "PromptBolo"
+description = "A voice-first prompt workspace that turns typed ideas or live Hinglish speech into clear, polished prompts users can refine and copy."
+version = "1.0.0"
+id = "artifacts/promptbolo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23606
+
+[services.development]
+run = "pnpm --filter @workspace/promptbolo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/promptbolo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/promptbolo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23606"
+BASE_PATH = "/"
