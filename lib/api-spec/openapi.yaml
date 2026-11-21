@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: promptbolo
+    description: PromptBolo prompt refinement
 paths:
   /healthz:
     get:
@@ -24,6 +26,48 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /promptbolo/refine:
+    post:
+      operationId: refinePrompt
+      tags: [promptbolo]
+      summary: Refine a rough prompt into a clear, detailed prompt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromptRefinementInput"
+      responses:
+        "200":
+          description: Refined prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptRefinement"
+        "400":
+          description: Invalid prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Prompt refinement is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Prompt refinement is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Prompt refinement rate limit reached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +77,31 @@ components:
           type: string
       required:
         - status
+    PromptRefinementInput:
+      type: object
+      properties:
+        sourceText:
+          type: string
+          minLength: 1
+          maxLength: 12000
+        mode:
+          type: string
+          enum: [saas, creator, weekend, general]
+      required:
+        - sourceText
+        - mode
+    PromptRefinement:
+      type: object
+      properties:
+        refinedPrompt:
+          type: string
+      required:
+        - refinedPrompt
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 
