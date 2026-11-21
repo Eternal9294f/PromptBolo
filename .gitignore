@@ -4,6 +4,8 @@
 node_modules/
 .next/
 dist/
+!artifacts/promptbolo/dist/
+!artifacts/api-server/dist/
 build/
 out/
 .venv/
